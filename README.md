@@ -1,56 +1,59 @@
-# Welcome to your Expo app 👋
+# YouTube & YouTube Music Dual Pro 🎵🎬
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+แอพพลิเคชันรวม **YouTube** และ **YouTube Music** ไว้ในแอพเดียว พัฒนาด้วย React Native & Expo SDK 57
 
-## Get started
+## ฟีเจอร์หลัก (Key Features)
 
-1. Install dependencies
+1. **Dual Player in One App (2-in-1)**:
+   - สลับระหว่าง **YouTube** (`m.youtube.com`) และ **YouTube Music** (`music.youtube.com`) ได้ทันทีผ่านแท็บด้านล่าง
+   - **Persistent WebViews**: ทั้งสองแท็บทำงานคู่ขนานกัน ไม่โหลดใหม่เมื่อสลับแท็บ ทำให้ฟังเพลงหรือดูวิดีโอต่อได้ไม่สะดุด
 
-   ```bash
-   npm install
-   ```
+2. **Google Account Sign-In (รองรับการล็อคอินบัญชี Google)**:
+   - มีระบบจำลอง Chrome Mobile User-Agent ป้องกันปัญหา `disallowed_useragent` (Error 403 ที่ Google มักบล็อกการล็อคอินบน WebView ทั่วไป)
+   - แชร์คุกกี้และ Session (`sharedCookiesEnabled`) ทำให้ล็อคอินครั้งเดียว ใช้งานได้ทั้ง YouTube และ YouTube Music
+   - ซิงค์เพลย์ลิสต์, ประวัติการฟัง, รายการที่กดชอบ (Likes) และช่องที่กดติดตามได้ครบถ้วน
 
-2. Start the app
+3. **Advanced AdBlock Engine (ระบบบล็อกโฆษณา)**:
+   - **CSS Element Hiding**: ซ่อนแบนเนอร์โฆษณา, วิดีโอสปอนเซอร์, ป๊อปอัพชวนสมัคร Premium ("Try YouTube Premium", "Music Premium")
+   - **Video In-Stream Ad Skipper**: กรอข้ามโฆษณาอัตโนมัติ (Fast-forward 16x) และกดปุ่ม "Skip Ad" ทันทีที่โฆษณาขึ้น
+   - **Network Interception**: ดักจับและคัดกรองลิงก์โฆษณา (Doubleclick, GoogleAdServices) และลบ `adPlacements` จากคำขอ YouTube Player API
+   - **Realtime Stats Counter**: มีตัวนับและแสดงจำนวนโฆษณาที่บล็อก/ข้ามไปแบบเรียลไทม์
 
-   ```bash
-   npx expo start
-   ```
+4. **Background Audio & Playback Features**:
+   - ป้องกันการหยุดเล่นอัตโนมัติเมื่อพับแอพหรือสลับหน้าจอ (Visibility API Protection)
+   - ข้ามป๊อปอัพ "Are you still listening?" เพื่อการฟังเพลงต่อเนื่อง
+   - สลับระหว่าง **Mobile View** และ **Desktop View** ได้ด้วยปุ่มเดียว
 
-In the output, you'll find options to open the app in a
+5. **Browser Navigation Controls**:
+   - ปุ่ม Back (ย้อนกลับ), Forward (ไปข้างหน้า), Reload (รีเฟรช), และ Home (หน้าแรก)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## การเริ่มต้นใช้งาน (Get Started)
 
-## Get a fresh project
-
-When you're ready, run:
-
+### ติดตั้ง Dependencies
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### รันแอพพลิเคชัน
+```bash
+npm run start
+```
+หรือรันบน Android:
+```bash
+npm run android
+```
 
-### Other setup steps
+---
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+## โครงสร้างโปรเจกต์ (Project Structure)
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- `src/app/`: Expo Router screens & layout (`_layout.tsx`, `index.tsx`)
+- `src/components/`:
+  - `HeaderBar.tsx`: แถบสถานะด้านบน พร้อมตัวนับ AdBlock, ปุ่มเข้าสู่ระบบ Google และปุ่มการตั้งค่า
+  - `NavigationBar.tsx`: แถบควบคุมเบราว์เซอร์และแถบสลับแท็บ YouTube / Music
+  - `SettingsModal.tsx`: หน้าต่างเมนูตั้งค่า (เปิด/ปิด AdBlock, โหมดเดสก์ท็อป, ล้างแคช)
+  - `WebContainer.tsx`: ควบคุม Dual WebView แบบแยกอิสระ พร้อมสคริปต์ AdBlock
+- `src/constants/config.ts`: การตั้งค่า URL, สีธีม, และ User-Agent
+- `src/utils/adblock.ts`: สคริปต์ CSS และ JavaScript สำหรับการบล็อกและข้ามโฆษณา

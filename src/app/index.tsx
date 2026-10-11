@@ -1,98 +1,133 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { View, StyleSheet, BackHandler } from 'react-native';
+import { HeaderBar } from '../components/HeaderBar';
+import { NavigationBar } from '../components/NavigationBar';
+import { SettingsModal } from '../components/SettingsModal';
+import { WebContainer, WebContainerHandle } from '../components/WebContainer';
+import { CONFIG } from '../constants/config';
 
 export default function HomeScreen() {
+  const [activeTab, setActiveTab] = useState<'youtube' | 'music'>('youtube');
+  const [adBlockEnabled, setAdBlockEnabled] = useState(true);
+  const [autoSkipAds, setAutoSkipAds] = useState(true);
+  const [backgroundAudio, setBackgroundAudio] = useState(true);
+  const [isDesktopMode, setIsDesktopMode] = useState(false);
+  const [adBlockCount, setAdBlockCount] = useState(0);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  const [navState, setNavState] = useState<{
+    canGoBack: boolean;
+    canGoForward: boolean;
+    url: string;
+  }>({
+    canGoBack: false,
+    canGoForward: false,
+    url: CONFIG.YOUTUBE_URL,
+  });
+
+  const webContainerRef = useRef<WebContainerHandle>(null);
+
+  // Handle Android hardware back button
+  useEffect(() => {
+    const onBackPress = () => {
+      if (isSettingsOpen) {
+        setIsSettingsOpen(false);
+        return true;
+      }
+      if (navState.canGoBack) {
+        webContainerRef.current?.goBack();
+        return true;
+      }
+      return false;
+    };
+
+    const backSubscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => backSubscription.remove();
+  }, [navState.canGoBack, isSettingsOpen]);
+
+  const handleAdBlocked = useCallback(() => {
+    setAdBlockCount((prev) => prev + 1);
+  }, []);
+
+  const handleTabChange = (newTab: 'youtube' | 'music') => {
+    if (newTab !== activeTab) {
+      // Pause inactive tab so both don't play simultaneously
+      webContainerRef.current?.pauseTab(activeTab);
+      setActiveTab(newTab);
+    }
+  };
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    <View style={styles.container}>
+      {/* Top Header Bar */}
+      <HeaderBar
+        activeTab={activeTab}
+        adBlockCount={adBlockCount}
+        adBlockEnabled={adBlockEnabled}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        onLoginPress={() => webContainerRef.current?.loginGoogle()}
+        onToggleAdBlock={() => setAdBlockEnabled((prev) => !prev)}
+      />
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+      {/* Main Web Views (Persistent Dual WebView) */}
+      <View style={styles.webContainerWrapper}>
+        <WebContainer
+          ref={webContainerRef}
+          activeTab={activeTab}
+          adBlockEnabled={adBlockEnabled}
+          isDesktopMode={isDesktopMode}
+          onAdBlocked={handleAdBlocked}
+          onNavStateChange={setNavState}
+        />
+      </View>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+      {/* Bottom Controls & Tab Switcher */}
+      <NavigationBar
+        activeTab={activeTab}
+        canGoBack={navState.canGoBack}
+        canGoForward={navState.canGoForward}
+        isDesktopMode={isDesktopMode}
+        onTabChange={handleTabChange}
+        onGoBack={() => webContainerRef.current?.goBack()}
+        onGoForward={() => webContainerRef.current?.goForward()}
+        onReload={() => webContainerRef.current?.reload()}
+        onGoHome={() => webContainerRef.current?.goHome()}
+        onToggleDesktopMode={() => setIsDesktopMode((prev) => !prev)}
+      />
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+      {/* Settings & Controls Modal */}
+      <SettingsModal
+        visible={isSettingsOpen}
+        adBlockEnabled={adBlockEnabled}
+        autoSkipAds={autoSkipAds}
+        backgroundAudio={backgroundAudio}
+        desktopMode={isDesktopMode}
+        blockedCount={adBlockCount}
+        onClose={() => setIsSettingsOpen(false)}
+        onToggleAdBlock={setAdBlockEnabled}
+        onToggleAutoSkip={setAutoSkipAds}
+        onToggleBackgroundAudio={setBackgroundAudio}
+        onToggleDesktopMode={setIsDesktopMode}
+        onResetCount={() => setAdBlockCount(0)}
+        onLoginGoogle={() => {
+          setIsSettingsOpen(false);
+          webContainerRef.current?.loginGoogle();
+        }}
+        onClearCache={() => {
+          setIsSettingsOpen(false);
+          webContainerRef.current?.clearCache();
+        }}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+    backgroundColor: CONFIG.THEME.background,
   },
-  safeArea: {
+  webContainerWrapper: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
   },
 });

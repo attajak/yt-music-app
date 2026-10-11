@@ -1,23 +1,30 @@
 {
   "expo": {
-    "name": "yt-musuc-hub",
-    "slug": "yt-musuc-hub",
-    "version": "1.0.0",
+    "name": "YT-Music",
+    "slug": "yt-music",
+    "description": "Dual Pro Player",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "ytmusuchub",
-    "userInterfaceStyle": "automatic",
+    "scheme": "ytmusic",
+    "userInterfaceStyle": "dark",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0F0F0F",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ],
+      "predictiveBackGestureEnabled": false,
+      "package": "com.attajak.ytmusic"
     },
     "web": {
       "output": "static",
@@ -37,6 +44,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "bac24a0c-9e4c-42e9-9097-beeb079c601c"
+      }
     }
   }
 }
