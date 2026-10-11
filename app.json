@@ -10,7 +10,8 @@
     "userInterfaceStyle": "dark",
     "ios": {
       "icon": "./assets/expo.icon",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.attajak.ytmusic"
     },
     "android": {
       "adaptiveIcon": {

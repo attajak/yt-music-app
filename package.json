@@ -2,6 +2,7 @@
   "name": "yt-music",
   "main": "expo-router/entry",
   "version": "0.1.0",
+  "license": "MIT",
   "dependencies": {
     "@expo/ui": "~57.0.22",
     "expo": "^57.0.27",
@@ -43,7 +44,9 @@
     "lint": "expo lint"
   },
   "private": true,
-  "allowScripts": {
-    "unrs-resolver@1.12.2": true
+  "author": {
+    "name": "attajak",
+    "email": "janrak@gmail.com",
+    "url": "https://github.com/attajak"
   }
 }
