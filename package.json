@@ -2,6 +2,7 @@
   "name": "yt-music",
   "main": "expo-router/entry",
   "version": "0.1.0",
+  "description": "",
   "license": "MIT",
   "dependencies": {
     "@expo/ui": "~57.0.25",
@@ -48,5 +49,11 @@
     "name": "attajak",
     "email": "janrak@gmail.com",
     "url": "https://github.com/attajak"
-  }
+  },
+  "repository": {
+    "type": "git",                                                    "url": "git+https://github.com/attajak/yt-music-app.git"
+  },
+  "bugs": {                                                           "url": "https://github.com/attajak/yt-music-app/issues"
+  },
+  "homepage": "https://github.com/attajak/yt-music-app#readme"
 }
