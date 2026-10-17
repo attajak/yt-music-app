@@ -5,6 +5,20 @@ import { NavigationBar } from '../components/NavigationBar';
 import { SettingsModal } from '../components/SettingsModal';
 import { WebContainer, WebContainerHandle } from '../components/WebContainer';
 import { CONFIG } from '../constants/config';
+import {
+  initMediaNotifications,
+  updateMediaNotification,
+  dismissMediaNotification,
+  setupMediaNotificationListener,
+} from '../utils/mediaNotification';
+
+interface CurrentMediaInfo {
+  title: string;
+  artist: string;
+  artwork?: string;
+  isPlaying: boolean;
+  tab: 'youtube' | 'music';
+}
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState<'youtube' | 'music'>('youtube');
@@ -14,6 +28,13 @@ export default function HomeScreen() {
   const [isDesktopMode, setIsDesktopMode] = useState(false);
   const [adBlockCount, setAdBlockCount] = useState(0);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  const [currentMedia, setCurrentMedia] = useState<CurrentMediaInfo>({
+    title: '',
+    artist: '',
+    isPlaying: false,
+    tab: 'youtube',
+  });
 
   const [navState, setNavState] = useState<{
     canGoBack: boolean;
@@ -26,6 +47,26 @@ export default function HomeScreen() {
   });
 
   const webContainerRef = useRef<WebContainerHandle>(null);
+
+  // Initialize media notification channel & categories
+  useEffect(() => {
+    initMediaNotifications();
+
+    const unsubscribe = setupMediaNotificationListener((action) => {
+      if (action === 'PLAY_PAUSE') {
+        webContainerRef.current?.togglePlayPause();
+      } else if (action === 'NEXT') {
+        webContainerRef.current?.nextTrack();
+      } else if (action === 'PREV') {
+        webContainerRef.current?.previousTrack();
+      }
+    });
+
+    return () => {
+      unsubscribe();
+      dismissMediaNotification();
+    };
+  }, []);
 
   // Handle Android hardware back button
   useEffect(() => {
@@ -49,11 +90,47 @@ export default function HomeScreen() {
     setAdBlockCount((prev) => prev + 1);
   }, []);
 
+  const handleMediaChange = useCallback(
+    (media: {
+      title: string;
+      artist: string;
+      artwork?: string;
+      isPlaying: boolean;
+      tab: 'youtube' | 'music';
+    }) => {
+      setCurrentMedia(media);
+
+      if (backgroundAudio) {
+        updateMediaNotification({
+          title: media.title,
+          artist: media.artist,
+          isPlaying: media.isPlaying,
+          tab: media.tab,
+        });
+      }
+    },
+    [backgroundAudio]
+  );
+
   const handleTabChange = (newTab: 'youtube' | 'music') => {
     if (newTab !== activeTab) {
       // Pause inactive tab so both don't play simultaneously
       webContainerRef.current?.pauseTab(activeTab);
       setActiveTab(newTab);
+    }
+  };
+
+  const handleToggleBackgroundAudio = (enabled: boolean) => {
+    setBackgroundAudio(enabled);
+    if (!enabled) {
+      dismissMediaNotification();
+    } else if (currentMedia.title || currentMedia.isPlaying) {
+      updateMediaNotification({
+        title: currentMedia.title,
+        artist: currentMedia.artist,
+        isPlaying: currentMedia.isPlaying,
+        tab: currentMedia.tab,
+      });
     }
   };
 
@@ -78,6 +155,7 @@ export default function HomeScreen() {
           isDesktopMode={isDesktopMode}
           onAdBlocked={handleAdBlocked}
           onNavStateChange={setNavState}
+          onMediaChange={handleMediaChange}
         />
       </View>
 
@@ -106,7 +184,7 @@ export default function HomeScreen() {
         onClose={() => setIsSettingsOpen(false)}
         onToggleAdBlock={setAdBlockEnabled}
         onToggleAutoSkip={setAutoSkipAds}
-        onToggleBackgroundAudio={setBackgroundAudio}
+        onToggleBackgroundAudio={handleToggleBackgroundAudio}
         onToggleDesktopMode={setIsDesktopMode}
         onResetCount={() => setAdBlockCount(0)}
         onLoginGoogle={() => {

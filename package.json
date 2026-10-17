@@ -14,6 +14,7 @@
     "expo-glass-effect": "~57.0.4",
     "expo-image": "~57.0.5",
     "expo-linking": "~57.0.13",
+    "expo-notifications": "~57.0.23",
     "expo-router": "~57.0.28",
     "expo-splash-screen": "^57.0.10",
     "expo-status-bar": "~57.0.1",
@@ -51,9 +52,11 @@
     "url": "https://github.com/attajak"
   },
   "repository": {
-    "type": "git",                                                    "url": "git+https://github.com/attajak/yt-music-app.git"
+    "type": "git",
+    "url": "git+https://github.com/attajak/yt-music-app.git"
   },
-  "bugs": {                                                           "url": "https://github.com/attajak/yt-music-app/issues"
+  "bugs": {
+    "url": "https://github.com/attajak/yt-music-app/issues"
   },
   "homepage": "https://github.com/attajak/yt-music-app#readme"
 }

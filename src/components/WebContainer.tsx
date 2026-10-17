@@ -1,4 +1,12 @@
-import React, { useRef, useImperativeHandle, forwardRef, useState, useCallback } from 'react';
+import React, {
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+} from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { WebView, WebViewNavigation } from 'react-native-webview';
 import { CONFIG } from '../constants/config';
@@ -12,6 +20,11 @@ export interface WebContainerHandle {
   loginGoogle: () => void;
   clearCache: () => void;
   pauseTab: (tab: 'youtube' | 'music') => void;
+  play: () => void;
+  pause: () => void;
+  togglePlayPause: () => void;
+  nextTrack: () => void;
+  previousTrack: () => void;
 }
 
 interface WebContainerProps {
@@ -20,6 +33,13 @@ interface WebContainerProps {
   isDesktopMode: boolean;
   onAdBlocked: () => void;
   onNavStateChange: (state: { canGoBack: boolean; canGoForward: boolean; url: string }) => void;
+  onMediaChange?: (media: {
+    title: string;
+    artist: string;
+    artwork?: string;
+    isPlaying: boolean;
+    tab: 'youtube' | 'music';
+  }) => void;
 }
 
 /** URL patterns to block at the WebView request level (before network fetch) */
@@ -46,6 +66,7 @@ export const WebContainer = forwardRef<WebContainerHandle, WebContainerProps>(
       isDesktopMode,
       onAdBlocked,
       onNavStateChange,
+      onMediaChange,
     },
     ref
   ) => {
@@ -74,7 +95,18 @@ export const WebContainer = forwardRef<WebContainerHandle, WebContainerProps>(
       : CONFIG.MOBILE_USER_AGENT;
 
     // Full adblock injection script (called once on load, re-injected on SPA nav)
-    const adblockScript = getAdblockInjectedCode(adBlockEnabled);
+    const adblockScript = useMemo(
+      () => getAdblockInjectedCode(adBlockEnabled),
+      [adBlockEnabled]
+    );
+
+    // Clean up timers on unmount
+    useEffect(() => {
+      return () => {
+        if (ytTimeoutRef.current) clearTimeout(ytTimeoutRef.current);
+        if (musicTimeoutRef.current) clearTimeout(musicTimeoutRef.current);
+      };
+    }, []);
 
     const startYtProgress = () => {
       setShowYtBar(true);
@@ -176,6 +208,26 @@ export const WebContainer = forwardRef<WebContainerHandle, WebContainerProps>(
         if (tab === 'youtube') youtubeWebRef.current?.injectJavaScript(script);
         else musicWebRef.current?.injectJavaScript(script);
       },
+      play: () => {
+        const activeRef = activeTab === 'youtube' ? youtubeWebRef : musicWebRef;
+        activeRef.current?.injectJavaScript('window.__ytMediaPlay?.(); true;');
+      },
+      pause: () => {
+        const activeRef = activeTab === 'youtube' ? youtubeWebRef : musicWebRef;
+        activeRef.current?.injectJavaScript('window.__ytMediaPause?.(); true;');
+      },
+      togglePlayPause: () => {
+        const activeRef = activeTab === 'youtube' ? youtubeWebRef : musicWebRef;
+        activeRef.current?.injectJavaScript('window.__ytMediaToggle?.(); true;');
+      },
+      nextTrack: () => {
+        const activeRef = activeTab === 'youtube' ? youtubeWebRef : musicWebRef;
+        activeRef.current?.injectJavaScript('window.__ytMediaNext?.(); true;');
+      },
+      previousTrack: () => {
+        const activeRef = activeTab === 'youtube' ? youtubeWebRef : musicWebRef;
+        activeRef.current?.injectJavaScript('window.__ytMediaPrev?.(); true;');
+      },
     }));
 
     const handleMessage = useCallback((event: any) => {
@@ -188,11 +240,26 @@ export const WebContainer = forwardRef<WebContainerHandle, WebContainerProps>(
           data.type === 'SKIP_BUTTON_CLICKED'
         ) {
           onAdBlocked();
+        } else if (data.type === 'MEDIA_METADATA') {
+          onMediaChange?.({
+            title: data.title || '',
+            artist: data.artist || '',
+            artwork: data.artwork || '',
+            isPlaying: true,
+            tab: activeTab,
+          });
+        } else if (data.type === 'MEDIA_PLAY_STATE') {
+          onMediaChange?.({
+            title: data.title || '',
+            artist: data.artist || '',
+            isPlaying: !!data.isPlaying,
+            tab: activeTab,
+          });
         }
-      } catch (e) {
+      } catch {
         // Non-JSON message, ignore
       }
-    }, [onAdBlocked]);
+    }, [onAdBlocked, onMediaChange, activeTab]);
 
     const handleNavigationStateChange = useCallback((navState: WebViewNavigation, forTab: 'youtube' | 'music') => {
       if (forTab === activeTab) {
@@ -368,6 +435,8 @@ export const WebContainer = forwardRef<WebContainerHandle, WebContainerProps>(
     );
   }
 );
+
+WebContainer.displayName = 'WebContainer';
 
 const styles = StyleSheet.create({
   container: {

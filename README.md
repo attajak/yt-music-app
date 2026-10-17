@@ -19,12 +19,21 @@
    - **Network Interception**: ดักจับและคัดกรองลิงก์โฆษณา (Doubleclick, GoogleAdServices) และลบ `adPlacements` จากคำขอ YouTube Player API
    - **Realtime Stats Counter**: มีตัวนับและแสดงจำนวนโฆษณาที่บล็อก/ข้ามไปแบบเรียลไทม์
 
-4. **Background Audio & Playback Features**:
-   - ป้องกันการหยุดเล่นอัตโนมัติเมื่อพับแอพหรือสลับหน้าจอ (Visibility API Protection)
-   - ข้ามป๊อปอัพ "Are you still listening?" เพื่อการฟังเพลงต่อเนื่อง
-   - สลับระหว่าง **Mobile View** และ **Desktop View** ได้ด้วยปุ่มเดียว
+4. **Background Audio & Screen-Off Playback (เล่นเพลงเบื้องหลัง + ปิดหน้าจอ)**:
+   - ป้องกันการหยุดเล่นอัตโนมัติเมื่อพับแอพ สลับหน้าจอ หรือกดปิดหน้าจอล็อคเครื่อง (Bypass Visibility API, focusout, pagehide และ blur)
+   - ข้ามป๊อปอัพ "Are you still listening?" บน YouTube Music ให้อัตโนมัติ
+   - สลับระหว่าง **Mobile View** และ **Desktop View** ได้ตามต้องการ
 
-5. **Browser Navigation Controls**:
+5. **Notification Bar Media Controls (ตัวควบคุมเพลง/วิดีโอบนแถบแจ้งเตือน & หน้าจอล็อค)**:
+   - แสดงชื่อเพลง (Title), ศิลปิน (Artist) และสถานะการเล่นบน Notification Bar และ Lock Screen อัตโนมัติ
+   - ปุ่มควบคุมโดยตรงบนแถบแจ้งเตือน:
+     - **⏮ Prev**: ย้อนกลับเพลงก่อนหน้า
+     - **⏯ Play / Pause**: เล่น / หยุดเพลงชั่วคราว
+     - **⏭ Next**: ข้ามไปเพลงถัดไป
+     - **📱 Open**: แตะเพื่อเปิดสลับกลับเข้าสู่แอพ
+   - เชื่อมต่อกับ `navigator.mediaSession` ของ YouTube/Music โดยตรง สั่งงานข้ามเพลงและเล่น/หยุดได้เสถียรทั้งในเบื้องหลังและขณะหน้าจอดับ
+
+6. **Browser Navigation Controls**:
    - ปุ่ม Back (ย้อนกลับ), Forward (ไปข้างหน้า), Reload (รีเฟรช), และ Home (หน้าแรก)
 
 ---
@@ -57,3 +66,4 @@ npm run android
   - `WebContainer.tsx`: ควบคุม Dual WebView แบบแยกอิสระ พร้อมสคริปต์ AdBlock
 - `src/constants/config.ts`: การตั้งค่า URL, สีธีม, และ User-Agent
 - `src/utils/adblock.ts`: สคริปต์ CSS และ JavaScript สำหรับการบล็อกและข้ามโฆษณา
+- `src/utils/mediaNotification.ts`: จัดการ Notification Channel, Notification Actions (Play, Pause, Next, Prev) และสื่อสารกับระบบแจ้งเตือน

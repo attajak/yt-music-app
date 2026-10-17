@@ -192,7 +192,7 @@ export const ADBLOCK_PRELOAD_JS = `
   } catch(e) {}
 
   // ============================================================
-  // 4. Prevent background playback pause (Visibility API)
+  // 4. Prevent background playback pause (Visibility API & Screen-Off)
   // ============================================================
   try {
     Object.defineProperty(document, 'hidden', {
@@ -203,11 +203,165 @@ export const ADBLOCK_PRELOAD_JS = `
       get: function() { return 'visible'; },
       configurable: true
     });
+    try {
+      document.hasFocus = function() { return true; };
+    } catch(e) {}
+
     var _origAEL = EventTarget.prototype.addEventListener;
     EventTarget.prototype.addEventListener = function(type, listener, options) {
-      if (type === 'visibilitychange' || type === 'webkitvisibilitychange') return;
+      if (type === 'visibilitychange' || type === 'webkitvisibilitychange' || type === 'pagehide') return;
       return _origAEL.call(this, type, listener, options);
     };
+  } catch(e) {}
+
+  // ============================================================
+  // 4.1 MediaSession Interception & Native Notification Bridge
+  // ============================================================
+  try {
+    window.__mediaActionHandlers = {};
+
+    if (navigator.mediaSession) {
+      // Intercept setActionHandler so we can trigger YouTube actions (next, prev, play, pause)
+      var _origSetActionHandler = navigator.mediaSession.setActionHandler;
+      navigator.mediaSession.setActionHandler = function(action, handler) {
+        window.__mediaActionHandlers[action] = handler;
+        return _origSetActionHandler.call(this, action, handler);
+      };
+
+      // Intercept metadata to send current song Title, Artist, Artwork to React Native
+      var _origMetadata = navigator.mediaSession.metadata;
+      Object.defineProperty(navigator.mediaSession, 'metadata', {
+        get: function() { return _origMetadata; },
+        set: function(meta) {
+          _origMetadata = meta;
+          try {
+            if (meta && window.ReactNativeWebView) {
+              var artworkUrl = '';
+              if (meta.artwork && meta.artwork.length > 0) {
+                artworkUrl = meta.artwork[meta.artwork.length - 1].src || '';
+              }
+              window.ReactNativeWebView.postMessage(JSON.stringify({
+                type: 'MEDIA_METADATA',
+                title: meta.title || '',
+                artist: meta.artist || '',
+                album: meta.album || '',
+                artwork: artworkUrl
+              }));
+            }
+          } catch(e) {}
+        },
+        configurable: true,
+        enumerable: true
+      });
+    }
+
+    // Expose control functions invoked by notification action buttons
+    window.__ytMediaPlay = function() {
+      try {
+        if (window.__mediaActionHandlers && window.__mediaActionHandlers['play']) {
+          window.__mediaActionHandlers['play']();
+          return;
+        }
+        var p = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
+        if (p && typeof p.playVideo === 'function') { p.playVideo(); return; }
+        var v = document.querySelector('video');
+        if (v) { v.play(); return; }
+        var btn = document.querySelector('.play-pause-button, .ytp-play-button, #play-pause-button');
+        if (btn) btn.click();
+      } catch(e) {}
+    };
+
+    window.__ytMediaPause = function() {
+      try {
+        if (window.__mediaActionHandlers && window.__mediaActionHandlers['pause']) {
+          window.__mediaActionHandlers['pause']();
+          return;
+        }
+        var p = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
+        if (p && typeof p.pauseVideo === 'function') { p.pauseVideo(); return; }
+        var v = document.querySelector('video');
+        if (v) { v.pause(); return; }
+        var btn = document.querySelector('.play-pause-button, .ytp-play-button, #play-pause-button');
+        if (btn) btn.click();
+      } catch(e) {}
+    };
+
+    window.__ytMediaToggle = function() {
+      try {
+        var v = document.querySelector('video');
+        if (v) {
+          if (v.paused) window.__ytMediaPlay();
+          else window.__ytMediaPause();
+        } else {
+          window.__ytMediaPlay();
+        }
+      } catch(e) {}
+    };
+
+    window.__ytMediaNext = function() {
+      try {
+        if (window.__mediaActionHandlers && window.__mediaActionHandlers['nexttrack']) {
+          window.__mediaActionHandlers['nexttrack']();
+          return;
+        }
+        var p = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
+        if (p && typeof p.nextVideo === 'function') { p.nextVideo(); return; }
+        var btn = document.querySelector('.next-button, .ytp-next-button, #next-button, [aria-label*="Next"], [aria-label*="ถัดไป"]');
+        if (btn) btn.click();
+      } catch(e) {}
+    };
+
+    window.__ytMediaPrev = function() {
+      try {
+        if (window.__mediaActionHandlers && window.__mediaActionHandlers['previoustrack']) {
+          window.__mediaActionHandlers['previoustrack']();
+          return;
+        }
+        var p = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
+        if (p && typeof p.previousVideo === 'function') { p.previousVideo(); return; }
+        var btn = document.querySelector('.previous-button, .ytp-prev-button, #previous-button, [aria-label*="Previous"], [aria-label*="ก่อนหน้า"]');
+        if (btn) btn.click();
+      } catch(e) {}
+    };
+
+    // Helper to send title fallback and playback state updates
+    function reportMediaState(isPlaying) {
+      try {
+        if (!window.ReactNativeWebView) return;
+        var meta = navigator.mediaSession && navigator.mediaSession.metadata;
+        var title = (meta && meta.title) || '';
+        var artist = (meta && meta.artist) || '';
+
+        // Fallback for YouTube Music and YouTube Web DOM
+        if (!title) {
+          var titleEl = document.querySelector('ytmusic-player-bar .title, .slim-video-metadata-title, h1.title, .ytp-title-link');
+          if (titleEl) title = titleEl.textContent ? titleEl.textContent.trim() : '';
+        }
+        if (!artist) {
+          var bylineEl = document.querySelector('ytmusic-player-bar .byline, ytm-slim-owner-renderer .owner-name, #channel-name');
+          if (bylineEl) artist = bylineEl.textContent ? bylineEl.textContent.trim() : '';
+        }
+
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          type: 'MEDIA_PLAY_STATE',
+          isPlaying: isPlaying,
+          title: title,
+          artist: artist
+        }));
+      } catch(e) {}
+    }
+
+    document.addEventListener('play', function(e) {
+      if (e.target && e.target.tagName === 'VIDEO') {
+        reportMediaState(true);
+      }
+    }, true);
+
+    document.addEventListener('pause', function(e) {
+      if (e.target && e.target.tagName === 'VIDEO') {
+        reportMediaState(false);
+      }
+    }, true);
   } catch(e) {}
 
   // ============================================================
