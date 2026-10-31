@@ -1,14 +1,14 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { CONFIG } from '../constants/config';
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { CONFIG } from "../constants/config";
 
 interface NavigationBarProps {
-  activeTab: 'youtube' | 'music';
+  activeTab: "youtube" | "music";
   canGoBack: boolean;
   canGoForward: boolean;
   isDesktopMode: boolean;
-  onTabChange: (tab: 'youtube' | 'music') => void;
+  onTabChange: (tab: "youtube" | "music") => void;
   onGoBack: () => void;
   onGoForward: () => void;
   onReload: () => void;
@@ -31,7 +31,9 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, 6) }]}>
+    <View
+      style={[styles.container, { paddingBottom: Math.max(insets.bottom, 6) }]}
+    >
       {/* Browser Controls Toolbar */}
       <View style={styles.webControlsRow}>
         <TouchableOpacity
@@ -40,23 +42,48 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
           disabled={!canGoBack}
           activeOpacity={0.6}
         >
-          <Text style={[styles.webCtrlText, !canGoBack && styles.webCtrlTextDisabled]}>◀</Text>
+          <Text
+            style={[
+              styles.webCtrlText,
+              !canGoBack && styles.webCtrlTextDisabled,
+            ]}
+          >
+            ◀
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.webCtrlBtn, !canGoForward && styles.webCtrlBtnDisabled]}
+          style={[
+            styles.webCtrlBtn,
+            !canGoForward && styles.webCtrlBtnDisabled,
+          ]}
           onPress={onGoForward}
           disabled={!canGoForward}
           activeOpacity={0.6}
         >
-          <Text style={[styles.webCtrlText, !canGoForward && styles.webCtrlTextDisabled]}>▶</Text>
+          <Text
+            style={[
+              styles.webCtrlText,
+              !canGoForward && styles.webCtrlTextDisabled,
+            ]}
+          >
+            ▶
+          </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.webCtrlBtn} onPress={onReload} activeOpacity={0.6}>
+        <TouchableOpacity
+          style={styles.webCtrlBtn}
+          onPress={onReload}
+          activeOpacity={0.6}
+        >
           <Text style={styles.webCtrlText}>↻</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.webCtrlBtn} onPress={onGoHome} activeOpacity={0.6}>
+        <TouchableOpacity
+          style={styles.webCtrlBtn}
+          onPress={onGoHome}
+          activeOpacity={0.6}
+        >
           <Text style={styles.webCtrlText}>⌂</Text>
         </TouchableOpacity>
 
@@ -65,7 +92,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
           onPress={onToggleDesktopMode}
           activeOpacity={0.6}
         >
-          <Text style={styles.webCtrlText}>{isDesktopMode ? '💻' : '📱'}</Text>
+          <Text style={styles.webCtrlText}>{isDesktopMode ? "💻" : "📱"}</Text>
         </TouchableOpacity>
       </View>
 
@@ -73,14 +100,19 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
       <View style={styles.tabBar}>
         {/* YouTube Tab */}
         <TouchableOpacity
-          style={[styles.tabButton, activeTab === 'youtube' && styles.tabButtonActive]}
-          onPress={() => onTabChange('youtube')}
+          style={[
+            styles.tabButton,
+            activeTab === "youtube" && styles.tabButtonActive,
+          ]}
+          onPress={() => onTabChange("youtube")}
           activeOpacity={0.8}
         >
           <View
             style={[
               styles.tabIconCircle,
-              activeTab === 'youtube' && { backgroundColor: CONFIG.THEME.primary },
+              activeTab === "youtube" && {
+                backgroundColor: CONFIG.THEME.primary,
+              },
             ]}
           >
             <Text style={styles.tabIconText}>▶</Text>
@@ -88,7 +120,10 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
           <Text
             style={[
               styles.tabLabel,
-              activeTab === 'youtube' && { color: '#FFFFFF', fontWeight: 'bold' },
+              activeTab === "youtube" && {
+                color: "#FFFFFF",
+                fontWeight: "bold",
+              },
             ]}
           >
             YouTube
@@ -97,14 +132,19 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
 
         {/* YouTube Music Tab */}
         <TouchableOpacity
-          style={[styles.tabButton, activeTab === 'music' && styles.tabButtonActive]}
-          onPress={() => onTabChange('music')}
+          style={[
+            styles.tabButton,
+            activeTab === "music" && styles.tabButtonActive,
+          ]}
+          onPress={() => onTabChange("music")}
           activeOpacity={0.8}
         >
           <View
             style={[
               styles.tabIconCircle,
-              activeTab === 'music' && { backgroundColor: CONFIG.THEME.musicAccent },
+              activeTab === "music" && {
+                backgroundColor: CONFIG.THEME.musicAccent,
+              },
             ]}
           >
             <Text style={styles.tabIconText}>♫</Text>
@@ -112,7 +152,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
           <Text
             style={[
               styles.tabLabel,
-              activeTab === 'music' && { color: '#FFFFFF', fontWeight: 'bold' },
+              activeTab === "music" && { color: "#FFFFFF", fontWeight: "bold" },
             ]}
           >
             Music
@@ -130,13 +170,13 @@ const styles = StyleSheet.create({
     borderTopColor: CONFIG.THEME.border,
   },
   webControlsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
     paddingVertical: 4,
     borderBottomWidth: 1,
-    borderBottomColor: '#1A1A1A',
-    backgroundColor: '#141414',
+    borderBottomColor: "#1A1A1A",
+    backgroundColor: "#141414",
   },
   webCtrlBtn: {
     paddingHorizontal: 16,
@@ -144,7 +184,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   webCtrlBtnActive: {
-    backgroundColor: '#2A2A2A',
+    backgroundColor: "#2A2A2A",
   },
   webCtrlBtnDisabled: {
     opacity: 0.3,
@@ -152,20 +192,20 @@ const styles = StyleSheet.create({
   webCtrlText: {
     color: CONFIG.THEME.text,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   webCtrlTextDisabled: {
     color: CONFIG.THEME.textSecondary,
   },
   tabBar: {
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 54,
   },
   tabButton: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 8,
     opacity: 0.6,
   },
@@ -176,18 +216,18 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#333333',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#333333",
+    alignItems: "center",
+    justifyContent: "center",
   },
   tabIconText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   tabLabel: {
     color: CONFIG.THEME.textSecondary,
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });

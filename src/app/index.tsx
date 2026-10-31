@@ -1,13 +1,13 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { View, StyleSheet, BackHandler } from 'react-native';
-import { HeaderBar } from '../components/HeaderBar';
-import { NavigationBar } from '../components/NavigationBar';
-import { SettingsModal } from '../components/SettingsModal';
-import { WebContainer, WebContainerHandle } from '../components/WebContainer';
-import { CONFIG } from '../constants/config';
+import React, { useState, useRef, useCallback, useEffect } from "react";
+import { View, StyleSheet, BackHandler } from "react-native";
+import { HeaderBar } from "../components/HeaderBar";
+import { NavigationBar } from "../components/NavigationBar";
+import { SettingsModal } from "../components/SettingsModal";
+import { WebContainer, WebContainerHandle } from "../components/WebContainer";
+import { CONFIG } from "../constants/config";
 
 export default function HomeScreen() {
-  const [activeTab, setActiveTab] = useState<'youtube' | 'music'>('youtube');
+  const [activeTab, setActiveTab] = useState<"youtube" | "music">("youtube");
   const [adBlockEnabled, setAdBlockEnabled] = useState(true);
   const [autoSkipAds, setAutoSkipAds] = useState(true);
   const [backgroundAudio, setBackgroundAudio] = useState(true);
@@ -41,7 +41,10 @@ export default function HomeScreen() {
       return false;
     };
 
-    const backSubscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    const backSubscription = BackHandler.addEventListener(
+      "hardwareBackPress",
+      onBackPress,
+    );
     return () => backSubscription.remove();
   }, [navState.canGoBack, isSettingsOpen]);
 
@@ -49,7 +52,7 @@ export default function HomeScreen() {
     setAdBlockCount((prev) => prev + 1);
   }, []);
 
-  const handleTabChange = (newTab: 'youtube' | 'music') => {
+  const handleTabChange = (newTab: "youtube" | "music") => {
     if (newTab !== activeTab) {
       // Pause inactive tab so both don't play simultaneously
       webContainerRef.current?.pauseTab(activeTab);
