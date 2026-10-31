@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Modal,
   View,
@@ -8,8 +8,8 @@ import {
   Switch,
   ScrollView,
   Alert,
-} from 'react-native';
-import { CONFIG } from '../constants/config';
+} from "react-native";
+import { CONFIG } from "../constants/config";
 
 interface SettingsModalProps {
   visible: boolean;
@@ -46,17 +46,22 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 }) => {
   const handleClearCacheConfirm = () => {
     Alert.alert(
-      'Clear Cache & Cookies',
-      'This will log you out of Google and reload the app. Are you sure?',
+      "Clear Cache & Cookies",
+      "This will log you out of Google and reload the app. Are you sure?",
       [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Clear', style: 'destructive', onPress: onClearCache },
-      ]
+        { text: "Cancel", style: "cancel" },
+        { text: "Clear", style: "destructive", onPress: onClearCache },
+      ],
     );
   };
 
   return (
-    <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      transparent={true}
+      onRequestClose={onClose}
+    >
       <View style={styles.overlay}>
         <View style={styles.container}>
           {/* Header */}
@@ -67,7 +72,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </TouchableOpacity>
           </View>
 
-          <ScrollView style={styles.scrollContent} contentContainerStyle={styles.scrollInner}>
+          <ScrollView
+            style={styles.scrollContent}
+            contentContainerStyle={styles.scrollInner}
+          >
             {/* AdBlock Stats Box */}
             <View style={styles.statsCard}>
               <View style={styles.statsRow}>
@@ -75,7 +83,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   <Text style={styles.statsNumber}>{blockedCount}</Text>
                   <Text style={styles.statsLabel}>Ads Blocked & Skipped</Text>
                 </View>
-                <TouchableOpacity style={styles.resetBtn} onPress={onResetCount}>
+                <TouchableOpacity
+                  style={styles.resetBtn}
+                  onPress={onResetCount}
+                >
                   <Text style={styles.resetBtnText}>Reset</Text>
                 </TouchableOpacity>
               </View>
@@ -83,12 +94,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
             {/* Google Sign In Banner */}
             <View style={styles.googleCard}>
-              <Text style={styles.cardSectionTitle}>🔑 Google Account Sign-In</Text>
-              <Text style={styles.cardDesc}>
-                Log in to sync your playlists, liked songs, subscriptions, and history. Using genuine Chrome Mobile User-Agent to safely bypass Google WebView restrictions.
+              <Text style={styles.cardSectionTitle}>
+                🔑 Google Account Sign-In
               </Text>
-              <TouchableOpacity style={styles.googleLoginBtn} onPress={onLoginGoogle}>
-                <Text style={styles.googleLoginBtnText}>Sign In with Google</Text>
+              <Text style={styles.cardDesc}>
+                Log in to sync your playlists, liked songs, subscriptions, and
+                history. Using genuine Chrome Mobile User-Agent to safely bypass
+                Google WebView restrictions.
+              </Text>
+              <TouchableOpacity
+                style={styles.googleLoginBtn}
+                onPress={onLoginGoogle}
+              >
+                <Text style={styles.googleLoginBtnText}>
+                  Sign In with Google
+                </Text>
               </TouchableOpacity>
             </View>
 
@@ -107,7 +127,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <Switch
                   value={adBlockEnabled}
                   onValueChange={onToggleAdBlock}
-                  trackColor={{ false: '#3A3A3A', true: '#00E676' }}
+                  trackColor={{ false: "#3A3A3A", true: "#00E676" }}
                   thumbColor="#FFFFFF"
                 />
               </View>
@@ -115,7 +135,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               {/* Auto Skip Ads */}
               <View style={styles.settingItem}>
                 <View style={styles.settingTextGroup}>
-                  <Text style={styles.settingName}>Fast-Forward & Auto Skip</Text>
+                  <Text style={styles.settingName}>
+                    Fast-Forward & Auto Skip
+                  </Text>
                   <Text style={styles.settingDesc}>
                     Auto-skip video ads and fast-forward in-stream commercials
                   </Text>
@@ -123,7 +145,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <Switch
                   value={autoSkipAds}
                   onValueChange={onToggleAutoSkip}
-                  trackColor={{ false: '#3A3A3A', true: '#00E676' }}
+                  trackColor={{ false: "#3A3A3A", true: "#00E676" }}
                   thumbColor="#FFFFFF"
                 />
               </View>
@@ -131,15 +153,18 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               {/* Background Audio */}
               <View style={styles.settingItem}>
                 <View style={styles.settingTextGroup}>
-                  <Text style={styles.settingName}>Background Audio Playback</Text>
+                  <Text style={styles.settingName}>
+                    Background Audio Playback
+                  </Text>
                   <Text style={styles.settingDesc}>
-                    Prevent music/video from auto-pausing when switching tabs or screen locks
+                    Prevent music/video from auto-pausing when switching tabs or
+                    screen locks
                   </Text>
                 </View>
                 <Switch
                   value={backgroundAudio}
                   onValueChange={onToggleBackgroundAudio}
-                  trackColor={{ false: '#3A3A3A', true: '#00E676' }}
+                  trackColor={{ false: "#3A3A3A", true: "#00E676" }}
                   thumbColor="#FFFFFF"
                 />
               </View>
@@ -155,7 +180,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <Switch
                   value={desktopMode}
                   onValueChange={onToggleDesktopMode}
-                  trackColor={{ false: '#3A3A3A', true: '#208AEF' }}
+                  trackColor={{ false: "#3A3A3A", true: "#208AEF" }}
                   thumbColor="#FFFFFF"
                 />
               </View>
@@ -174,8 +199,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
             {/* App Info */}
             <View style={styles.footerInfo}>
-              <Text style={styles.footerText}>YouTube & YouTube Music Dual v1.0.0</Text>
-              <Text style={styles.footerSubText}>AdBlock Engine + Background Audio + Google Login Ready</Text>
+              <Text style={styles.footerText}>
+                YouTube & YouTube Music Dual v1.0.0
+              </Text>
+              <Text style={styles.footerSubText}>
+                AdBlock Engine + Background Audio + Google Login Ready
+              </Text>
             </View>
           </ScrollView>
         </View>
@@ -187,21 +216,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
-    justifyContent: 'flex-end',
+    backgroundColor: "rgba(0, 0, 0, 0.75)",
+    justifyContent: "flex-end",
   },
   container: {
     backgroundColor: CONFIG.THEME.background,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    maxHeight: '85%',
+    maxHeight: "85%",
     borderWidth: 1,
     borderColor: CONFIG.THEME.border,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
@@ -210,7 +239,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     color: CONFIG.THEME.text,
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   closeBtn: {
     padding: 6,
@@ -218,7 +247,7 @@ const styles = StyleSheet.create({
   closeBtnText: {
     color: CONFIG.THEME.textSecondary,
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   scrollContent: {
     paddingHorizontal: 16,
@@ -228,32 +257,32 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   statsCard: {
-    backgroundColor: '#182E1E',
+    backgroundColor: "#182E1E",
     borderWidth: 1,
-    borderColor: '#00E676',
+    borderColor: "#00E676",
     borderRadius: 12,
     padding: 16,
   },
   statsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   statsNumber: {
-    color: '#00E676',
+    color: "#00E676",
     fontSize: 32,
-    fontWeight: '900',
+    fontWeight: "900",
   },
   statsLabel: {
     color: CONFIG.THEME.text,
     fontSize: 13,
     marginTop: 2,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   resetBtn: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: "rgba(255,255,255,0.1)",
     borderRadius: 8,
   },
   resetBtnText: {
@@ -270,7 +299,7 @@ const styles = StyleSheet.create({
   cardSectionTitle: {
     color: CONFIG.THEME.text,
     fontSize: 15,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 6,
   },
   cardDesc: {
@@ -280,14 +309,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   googleLoginBtn: {
-    backgroundColor: '#4285F4',
+    backgroundColor: "#4285F4",
     paddingVertical: 10,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   googleLoginBtnText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
+    color: "#FFFFFF",
+    fontWeight: "bold",
     fontSize: 14,
   },
   section: {
@@ -301,14 +330,14 @@ const styles = StyleSheet.create({
   sectionTitle: {
     color: CONFIG.THEME.textSecondary,
     fontSize: 12,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
+    fontWeight: "bold",
+    textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   settingItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingVertical: 4,
   },
   settingTextGroup: {
@@ -318,7 +347,7 @@ const styles = StyleSheet.create({
   settingName: {
     color: CONFIG.THEME.text,
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   settingDesc: {
     color: CONFIG.THEME.textSecondary,
@@ -327,34 +356,34 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   clearCacheBtn: {
-    backgroundColor: 'rgba(255, 68, 68, 0.1)',
-    borderColor: '#FF4444',
+    backgroundColor: "rgba(255, 68, 68, 0.1)",
+    borderColor: "#FF4444",
     borderWidth: 1,
     paddingVertical: 10,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   clearCacheText: {
-    color: '#FF6666',
-    fontWeight: '600',
+    color: "#FF6666",
+    fontWeight: "600",
     fontSize: 13,
   },
   footerInfo: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 12,
     gap: 4,
   },
   footerText: {
     color: CONFIG.THEME.textSecondary,
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   subFooterText: {
-    color: '#666666',
+    color: "#666666",
     fontSize: 11,
   },
   footerSubText: {
-    color: '#666666',
+    color: "#666666",
     fontSize: 11,
   },
 });

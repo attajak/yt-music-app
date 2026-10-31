@@ -1,10 +1,10 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { CONFIG } from '../constants/config';
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { CONFIG } from "../constants/config";
 
 interface HeaderBarProps {
-  activeTab: 'youtube' | 'music';
+  activeTab: "youtube" | "music";
   adBlockCount: number;
   adBlockEnabled: boolean;
   onOpenSettings: () => void;
@@ -30,14 +30,21 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
           <View
             style={[
               styles.logoBadge,
-              { backgroundColor: activeTab === 'youtube' ? CONFIG.THEME.primary : CONFIG.THEME.musicAccent },
+              {
+                backgroundColor:
+                  activeTab === "youtube"
+                    ? CONFIG.THEME.primary
+                    : CONFIG.THEME.musicAccent,
+              },
             ]}
           >
-            <Text style={styles.logoBadgeText}>{activeTab === 'youtube' ? '▶' : '♫'}</Text>
+            <Text style={styles.logoBadgeText}>
+              {activeTab === "youtube" ? "▶" : "♫"}
+            </Text>
           </View>
           <View>
             <Text style={styles.titleText}>
-              {activeTab === 'youtube' ? 'YouTube' : 'YouTube Music'}
+              {activeTab === "youtube" ? "YouTube" : "YouTube Music"}
             </Text>
             <Text style={styles.subText}>Dual Pro Player</Text>
           </View>
@@ -49,14 +56,18 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
           <TouchableOpacity
             style={[
               styles.adBlockBadge,
-              adBlockEnabled ? styles.adBlockBadgeActive : styles.adBlockBadgeDisabled,
+              adBlockEnabled
+                ? styles.adBlockBadgeActive
+                : styles.adBlockBadgeDisabled,
             ]}
             onPress={onToggleAdBlock}
             activeOpacity={0.7}
           >
-            <Text style={styles.adBlockIcon}>{adBlockEnabled ? '🛡️' : '⚠️'}</Text>
+            <Text style={styles.adBlockIcon}>
+              {adBlockEnabled ? "🛡️" : "⚠️"}
+            </Text>
             <Text style={styles.adBlockText}>
-              {adBlockEnabled ? `${adBlockCount}` : 'OFF'}
+              {adBlockEnabled ? `${adBlockCount}` : "OFF"}
             </Text>
           </TouchableOpacity>
 
@@ -91,32 +102,32 @@ const styles = StyleSheet.create({
   },
   content: {
     height: 52,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 12,
   },
   brandContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   logoBadge: {
     width: 32,
     height: 32,
     borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   logoBadgeText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   titleText: {
     color: CONFIG.THEME.text,
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
     letterSpacing: -0.3,
   },
   subText: {
@@ -125,13 +136,13 @@ const styles = StyleSheet.create({
     marginTop: -2,
   },
   actionsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   adBlockBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 8,
     paddingVertical: 5,
     borderRadius: 14,
@@ -139,12 +150,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   adBlockBadgeActive: {
-    backgroundColor: 'rgba(0, 230, 118, 0.15)',
-    borderColor: '#00E676',
+    backgroundColor: "rgba(0, 230, 118, 0.15)",
+    borderColor: "#00E676",
   },
   adBlockBadgeDisabled: {
-    backgroundColor: 'rgba(255, 68, 68, 0.15)',
-    borderColor: '#FF4444',
+    backgroundColor: "rgba(255, 68, 68, 0.15)",
+    borderColor: "#FF4444",
   },
   adBlockIcon: {
     fontSize: 12,
@@ -152,7 +163,7 @@ const styles = StyleSheet.create({
   adBlockText: {
     color: CONFIG.THEME.text,
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   loginBtn: {
     backgroundColor: CONFIG.THEME.surfaceHover,
@@ -165,15 +176,15 @@ const styles = StyleSheet.create({
   loginBtnText: {
     color: CONFIG.THEME.text,
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   iconBtn: {
     width: 34,
     height: 34,
     borderRadius: 17,
     backgroundColor: CONFIG.THEME.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderWidth: 1,
     borderColor: CONFIG.THEME.border,
   },
